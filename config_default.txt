@@ -1,0 +1,5 @@
+# tables
+DATADIR=${BASEDIR}/data
+
+# web UI
+WEBSERVERPORT="3222"

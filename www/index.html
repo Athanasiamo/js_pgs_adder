@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <title>LCBC PGS</title>
+    <link rel="icon" href="img/fav.ico" type="image/x-icon"/ >
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    <style>
+      .card-header {
+        background-color:#198C8C;
+        color: black;
+        opacity: .7; 
+      }
+      .card {
+        width: 300px;
+      }
+      a {
+        color: #99CCCC;
+      }
+      a:hover {
+        color: #D1E8E8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container p-5 text-center">
+      <h1>LCBC computed PGS'</h1>
+
+      <div id="pgsIds" class="d-flex justify-content-between flex-wrap"></div>
+    </div>
+
+    <script>
+
+      (async function() {
+        const r = await fetch("./cgi/get_pgslist_json.cgi");
+        if (!r.ok) {
+          throw r.statusText();
+        }
+
+        const pgs_json = await r.json();
+
+        const e_p = document.getElementById("pgsIds");
+        for(id in pgs_json){
+          e_card = document.createElement("div");
+          e_card.classList.add("card");
+          e_card.classList.add("m-1");
+
+          e_card_head = document.createElement("div");
+          e_card_head.classList.add("card-header");
+          e_card_head.innerHTML = id;
+          e_card.appendChild(e_card_head);
+
+          e_card_body = document.createElement("div");
+          e_card_body.classList.add("card-body");
+          e_card.appendChild(e_card_body);
+
+          e_card_title = document.createElement("h5");
+          e_card_title.classList.add("card-title");
+          e_card_title.innerHTML = pgs_json[id]["title"];
+          e_card_body.appendChild(e_card_title);
+
+          e_card_text = document.createElement("p");
+          e_card_text.classList.add("card-text");
+          e_card_text.innerHTML = pgs_json[id]["reference"];
+          e_card_body.appendChild(e_card_text);
+
+          e_card_button = document.createElement("button");
+          e_card_button.innerHTML = "Expand pgs list";
+          e_card_button.classList.add("btn");
+          e_card_button.classList.add("btn-default");
+          e_card_button.setAttribute('data-target', `#${id}`);
+          e_card_button.setAttribute('data-toggle', 'collapse');
+          e_card_button.setAttribute('aria-expanded', 'false');
+
+          e_card_body.appendChild(e_card_button);
+
+          e_card_collapse = document.createElement("div");          
+          e_card_collapse.classList.add("collapse");
+          e_card_collapse.classList.add("mt-4");
+          e_card_collapse.id = `${id}`;
+          e_card.appendChild(e_card_collapse);
+
+          e_card_pgs_table = document.createElement("table");
+          e_card_pgs_table.classList.add("table");
+          e_card_pgs_table.classList.add("table-hover");
+          e_card_pgs_table.classList.add("table-dark");
+          e_card_pgs_table.classList.add("table-striped");
+          e_card_pgs_table.classList.add("table-sm");
+          e_card_pgs_table_body = document.createElement("tbody");
+          e_card_pgs_table_head = document.createElement("thead");
+          e_card_pgs_table_head_tr = document.createElement("tr");
+          e_card_pgs_table_head.appendChild(e_card_pgs_table_head_tr);
+          e_card_pgs_table.appendChild(e_card_pgs_table_head);
+          e_card_pgs_table.appendChild(e_card_pgs_table_body);
+          e_card_collapse.appendChild(e_card_pgs_table);
+
+          e_card_footer = document.createElement("div");
+          e_card_footer.classList.add("card-footer");
+          e_card_footer.classList.add("text-muted");
+          e_card_footer.innerHTML = `Last updated: ${pgs_json[id]["updated"]}`;
+          e_card.appendChild(e_card_footer);
+
+          e_p.appendChild(e_card);
+
+          // add table with pgs within each card
+          const tabl_heads = ["short", "covariates"];
+          for(heads in tabl_heads){
+            e_card_pgs_table_head_th = document.createElement("th");
+            e_card_pgs_table_head_th.setAttribute("scope", "col");
+            e_card_pgs_table_head_th.classList.add("th-sm");
+            e_card_pgs_table_head_th.innerHTML = tabl_heads[heads];
+            e_card_pgs_table_head_tr.appendChild(e_card_pgs_table_head_th);
+          }
+          for(pgs in pgs_json[id]["pgs"]){
+            e_card_pgs_row   = document.createElement("tr");
+            e_card_pgs_short = document.createElement("td");
+            e_card_pgs_short.setAttribute("data-toggle", "tooltip");
+            e_card_pgs_short.setAttribute("title", pgs_json[id]["pgs"][pgs]["title"]);
+            
+            e_card_pgs_row.appendChild(e_card_pgs_short);
+            e_card_pgs_covariates = document.createElement("td");
+            e_card_pgs_covariates.innerHTML = pgs_json[id]["pgs"][pgs]["covariates"].join(", ");
+            e_card_pgs_row.appendChild(e_card_pgs_covariates);
+            e_card_pgs_table_body.appendChild(e_card_pgs_row);
+
+            e_card_pgs_a =  document.createElement("a");
+            const dt = pgs_json[id]["updated"];
+            e_card_pgs_a.href = `./cgi/get_pgsfile_tsv.cgi?=${encodeURI(id)}?${encodeURI(pgs)}`;
+            e_card_pgs_a.download = `noas_${id}_${pgs}_${dt}.tsv`;
+            e_card_pgs_a.innerHTML = pgs;
+            e_card_pgs_short.appendChild(e_card_pgs_a);
+          }
+        };
+
+      })();
+    </script>
+  </body>
+</html>
