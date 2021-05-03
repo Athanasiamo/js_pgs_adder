@@ -3,36 +3,102 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="./css/bootstrap.min.css">
-    <title>LCBC PGS</title>
-    <link rel="icon" href="img/fav.ico" type="image/x-icon"/ >
+    <link rel="stylesheet" href="./css/lcbc.css">
     <script src="./js/jquery.min.js"></script>
     <script src="./js/bootstrap.bundle.min.js"></script>
-    <style>
-      .card-header {
-        background-color:#198C8C;
-        color: black;
-        opacity: .7; 
-      }
-      .card {
-        width: 300px;
-      }
-      a {
-        color: #99CCCC;
-      }
-      a:hover {
-        color: #D1E8E8;
-      }
-    </style>
+    <title>LCBC PGS</title>
   </head>
   <body>
-    <div class="container p-5 text-center">
-      <h1>LCBC computed PGS'</h1>
-
+    <div class="container p-5 m-autox text-center">
+      <div class="hero mb-4"></div>
+      <h1 class="mb-2">LCBC computed PGS'</h1>
+      <a href="data_descr.html"><small class="text-muted">
+        Description of data organisation necessary for adding to this list
+      </small></a>
+      <div class="container mb-4 p-2 border">
+        <p class="font-weight-bold">Select thesholds</p>
+        <div id="s-selector" class="p-2 m-2"></div>
+      </div>
+      <p>
+        Make sure to get necessary NOAS data to be able to append PGS data.
+        Choose from the <code>geneticinfo</code> table, the <code>iid</code> column.
+        As long as this column is on your data, you can merge the data by this shared column.
+      </p>
       <div id="pgsIds" class="d-flex justify-content-between flex-wrap"></div>
     </div>
 
     <script>
+      (function() {
+        const pgs_thresh = {
+          "S1": 5e-08,
+          "S2": 1e-07,
+          "S3": 1e-06,
+          "S4": 1e-05,
+          "S5": 1e-04,
+          "S6": 0.001,
+          "S7": 0.01,
+          "S8": 0.05,
+          "S9": 0.1,
+          "S10": 0.2,
+          "S11": 0.5,
+          "S12": 1
+        };
+        
+        for(var s in pgs_thresh){  
+          e_check_div = document.createElement("div");
+          e_check_div.classList.add("custom-control");
+          e_check_div.classList.add("custom-checkbox");
+          e_check_div.classList.add("custom-control-inline");
+          e_check_div.classList.add("checkbox");
+          e_check_div.classList.add("checkbox-info");
+          e_check_div.setAttribute("data-toggle", "tooltip");
+          e_check_div.setAttribute("title", `p-threshold: ${pgs_thresh[s]}`);
+            
+          e_check = document.createElement("input");
+          e_check.classList.add("custom-control-input");
+          e_check.classList.add("checkbox-styled");
+          e_check.type = "checkbox";
+          e_check_lab = document.createElement("label");
+          e_check_lab.classList.add("custom-control-label");
+          e_check.label = s;
+          e_check.id = s
+          e_check.name = "s-checkbox";
+          e_check.value = s;
+          e_check.addEventListener("change", update_urls, false)
+          e_check_lab.classList.add("pr-2");
+          e_check_lab.innerHTML = s;
+          e_check_lab.setAttribute("for", s);
 
+          default_checked = ["S7"];
+          if(default_checked.includes(s)){
+            e_check.checked = true;
+          }
+          document.getElementById("s-selector").appendChild(e_check_div);
+          e_check_div.appendChild(e_check);
+          e_check_div.appendChild(e_check_lab);
+        }
+      })();
+
+      function update_urls() {
+        const checkboxes = document.querySelectorAll(`input[name="s-checkbox"]:checked`);
+        let values = [];
+        checkboxes.forEach((checkbox) => {
+            values.push(checkbox.value);
+        });
+        if (values.length === 0) { 
+          alert("At least one threshold must be chosen.");
+          document.getElementById("S7").checked = true;
+          values = "S7";
+        }
+        const links = document.querySelectorAll(`a[name="links"]`);
+        links.forEach((link) => {
+          l_url = link.getAttribute("href");
+          var clean_url = l_url.substring(0, l_url.lastIndexOf('/') + 1 );
+          var new_url = `${clean_url}?${values.toString()}`;
+          link.setAttribute("href", new_url);
+        });
+      }
+      
       (async function() {
         const r = await fetch("./cgi/get_pgslist_json.cgi");
         if (!r.ok) {
@@ -126,14 +192,13 @@
             e_card_pgs_table_body.appendChild(e_card_pgs_row);
 
             e_card_pgs_a =  document.createElement("a");
-            const dt = pgs_json[id]["updated"];
-            e_card_pgs_a.href = `./cgi/get_pgsfile_tsv.cgi?=${encodeURI(id)}?${encodeURI(pgs)}`;
-            e_card_pgs_a.download = `noas_${id}_${pgs}_${dt}.tsv`;
+            e_card_pgs_a.name = "links";
+            e_card_pgs_a.href = `./cgi/get_pgsfile_tsv.cgi?=${encodeURI(id)}?${encodeURI(pgs)}/`;
+            e_card_pgs_a.download = `noas_${id}_${pgs}_${pgs_json[id]["updated"]}.tsv`;
             e_card_pgs_a.innerHTML = pgs;
             e_card_pgs_short.appendChild(e_card_pgs_a);
           }
         };
-
       })();
     </script>
   </body>
