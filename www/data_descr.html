@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/lcbc.css">
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    <title>PGS data description</title>
+</head>
+<body>
+    <div class="container p-5 m-autox ">
+        <a href="./"><div class="hero mb-4"></div></a>
+        <center>
+            <h1 class="mb-2">LCBC computed PGS'</h1>
+            <h3 class="mb-2">Data description</h1>
+        </center>
+
+        <div class="row ">
+            <div class="col">
+                <p>
+                    The data in this pgs application is formatted in specific ways 
+                    to be a clean and  curated list of possible PGS' reasearchers at 
+                    LCBC may use then wanted.
+                    This means data need to adhere to specific rules in terms of 
+                    organisational structure, meta-data additions and also how they are
+                    updated or new variants are added.
+                </p>
+                <p>
+                    The data entered here should be computed for the entire LCBC catalogue 
+                    of participants. 
+                    This is <b>not</b> a place to store project-specifically computed PGS', 
+                    i.e. PGS' computed on only parts of the LCBC sample.
+                    These PGS' here are intended for simple use in papers.
+                    For more tailored PGS analyses, the involvement of a genetisist is necessary
+                    in order to get the PGS wanted. 
+                    Such outputs are <b>not</b> to be entered here. 
+                </p>
+                <p>
+                    <b>Data inclusion criteria:</b>
+                    <ul>
+                        <li>Computed for all LCBC participants</li>
+                        <li>One top folder for a single paper reference</li>
+                        <li>Upon update, all pgs for a paper reference must be re-computed</li>
+                        <li>Meta-data files must be populated on inclusion/update</li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+        <hr class="hr-main">
+        <div class="row ">
+            <h3 class="mt-4 col-12">Folder nesting structure</h3>
+            <div class="col-lg">
+                <p>
+                    A general rule is that there should be one main folder per PGS classification
+                    system. 
+                    By classification system we mean PGS' derived by protocols described in
+                    the literature, by specific papers. 
+                    Each classification system gets an overarching folder, and each type og
+                    PGS get again another folder within this folder. 
+                    This two-tier nesting structure makes sure the data are neatly organised.
+                </p>
+                <p>
+                    The folders within each classification, may also include variants computed using
+                    different coviariates.
+                    While it is a good idea to also name these folders in an obvious manner, the
+                    meta-data must also be updated to reflect the covariates. 
+                    See the descriptions of meta-data accompnying each tier.
+                </p>
+            </div>
+            <div class="col-lg">
+                <pre>
+jansen_2008_pnas/
+    _metadata.json
+    ad/
+        _metadata.json
+        ad.S1.profile
+        ad.S2.profile
+        [...]
+        ad.S11.profile
+        ad.S12.profile
+    ad_wapoe/
+        _metadata.json
+        ad_wapoe.S1.profile
+        ad_wapoe.S2.profile
+        [...]
+        ad_wapoe.S11.profile
+        ad_wapoe.S12.profile
+daish_2020_genetics/
+    _metadata.json  
+    bmi/
+        _metadata.json
+        bmi.S1.profile
+        bmi.S2.profile
+        [...]
+        bmi.S11.profile
+        bmi.S12.profile
+    bp/
+        _metadata.json
+        bp.S1.profile
+        bp.S2.profile
+        [...]
+        bp.S11.profile
+        bp.S12.profile
+                </pre>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <h5 class="mt-2 col-12">First folder tier</h3>
+
+            <div class="col-lg">
+                <p>
+                    The first tier of folders should reflect single papers describin
+                    a PGS classification. 
+                    The naming of these folder should contain the name of the first 
+                    author, year of publication, and abbreviated journal name.
+                    In cases where the folder names would be the same, add sequential
+                    alphabetical characters to the year of publication to distinguish them.
+                    Of note, do <b>not</b> another first level folder for when you create
+                    PGS' with covariates, these belong in the second tier. 
+                </p>
+            </div>
+            <div class="col-lg">
+                <pre>
+    jansen_2008a_pnas/
+        _metadata.json
+    jansen_2008b_pnas/
+        _metadata.json
+    daish_2020_genetics/
+        _metadata.json  
+                </pre>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg">
+                <p>
+                    The first tier should have a single file within it named <code>_metadata.json</code>.
+                    The content in this file is used to keep track of the data within the tier.
+                    The meta-data is intended both to keep track of when data is updated
+                    (see the update field with ISO date [<code>yyyy-mm-dd</code>]), but also to provide a 
+                    simple title for the application (title field), and provide the users with
+                    the full reference for the classification.
+                </p>
+                <p>
+                    Whenever data within this tier is updated or new variants with covariates are
+                    added, the whole range of variants should be updated, to ensure that all variants
+                    within the tier are calculated on the same sample.
+                    The update field must then also be updated to the data these new variants were added.
+                </p>
+            </div>
+            <div class="col-lg">
+                <pre>
+    {
+    "title": "Jansen et al 2008 - AD",
+    "updated": "2019-01-01", 
+    "reference": "Jansen et al. 2008, 
+        some long title of a paper, vol X, 
+        p123-142, DOI: doi.url"
+    }
+                </pre>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <h5 class="mt-2 col-12">Second folder tier</h3>
+
+            <div class="col-lg">
+                <p>
+                    The second tier, with the expection on the <code>_metadata.json</code> file,
+                    should contain only folders.
+                    These folder should be a single folder per PGS and PGS x covariate combination.
+                    This level is likely to have wuite a lot of folders, and as such the names of the
+                    folders should be short and understandeable. 
+                </p>
+                <p>
+                    As a rule, PGS' calculated without any covariates take the names as described in 
+                    the paper reference. Preferrably in lower case lettering, but there might be reasons
+                    to allow exceptions to this (like blood markers where the capitalization of letters
+                    becomes important). 
+                </p>
+                <p>
+                    Variants computed with covariates should have this indicated in the folder name, though
+                    these should still remain short. 
+                    The list of covariates must be provided in the meta-data for each variant, to the information
+                    will be retained even without clear naming. 
+                </p>
+            </div>
+            <div class="col-lg">
+                <pre>
+    jansen_2008_pnas/
+        _metadata.json
+        ad/
+        ad_apoe/
+        ad_sex/
+        as_sexapoe/
+                </pre>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg">
+                <p>
+                    Also this tier has a <code>_metadata.json</code> file.
+                    The content of this file is different from the one in the first iter.
+                    The file should provide a longer more legibile name (title) for the PGS (i.e.
+                    the PGS acronym should be spelled out, so that those who dont recognise 
+                    the abbreviation might understand. Like 'ad' being 'Alzheimer's didease').
+                </p>
+                <p>
+                    Additionally, the file should list all covariates if any were used,
+                    in quotatons and comma separated.
+                    In cases where there were no covariates, leave the list empty (<code>"covariates": []</code>)
+                </p>
+            </div>
+            <div class="col-lg">
+                <pre>
+    {
+    "title": "Body mass index",
+    "covariates": ["list", "of", "covariates"]
+    }
+                </pre>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg">
+                <p>
+                    Within the second tier, lie all the plink <code>.profile</code> files.
+                    These can remain exactly how the files come from plink, there is internal
+                    code that will combine the various profiles correctly given user choices.
+                </p>
+                <p>
+                    The other plink files may also stay in this folder, despite the application not
+                    using these for anything. 
+                </p>
+            </div>
+            <div class="col-lg">
+                <pre>
+    jansen_2008_pnas/
+        _metadata.json
+        ad/
+            _metadata.json
+            ad.S1.profile
+            ad.S2.profile
+            ad.S3.profile
+            ad.S4.profile
+            ad.S5.profile
+            ad.S6.profile
+            ad.S7.profile
+            ad.S8.profile
+            ad.S9.profile
+            ad.S10.profile
+            ad.S11.profile
+            ad.S12.profile
+                </pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
