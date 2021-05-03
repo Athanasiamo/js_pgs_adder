@@ -6,13 +6,24 @@ pgs_read <- function(path){
     header = TRUE,
     stringsAsFactors = FALSE
   )
-  names(pgs_data) <- tolower(names(pgs_data))
-  pgs_data[,3:6]
+  pgs_data <-  pgs_data[,3:6]
+
+  s <- gsub("\\.profile", "", basename(path))
+  s <- strsplit(s, "\\.")[[1]]
+  s <- s[length(s)]
+
+  names(pgs_data) <- tolower(paste(s, names(pgs_data), sep = "_"))
+  pgs_data
 }
 
-args = commandArgs(trailingOnly=TRUE)
+args <- commandArgs(trailingOnly=TRUE)
+pattern <- gsub(",", "\\.profile$|", args[2])
 
-fl <- list.files(args[1], "profile", full.names = TRUE)
+fl <- list.files(
+  path = args[1],
+  pattern = paste0(pattern, "\\.profile$"),
+  full.names = TRUE
+)
 data <- lapply(fl, pgs_read)
 data <- do.call(cbind, data)
 
