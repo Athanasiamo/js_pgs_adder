@@ -6,15 +6,23 @@ _add: all
 modules := 
 
 include make_lighttpd.mk
+include make_rpkgs.mk
+include make_bootstrap.mk
 
 all: $(addsuffix _build, $(modules))
-	$(MAKE) -f r_pkgs.mk all
 
 .PHONY: download
 download: $(addsuffix _download, $(modules))
-	$(MAKE) -f r_pkgs.mk download
 
 .PHONY: clean
 clean: $(addsuffix _clean, $(modules))
-	$(MAKE) -f r_pkgs.mk clean
+
+.PHONY: dlclean
+dlclean: $(addsuffix _dlclean, $(modules))
+
+.PHONY: distclean
+distclean: $(addsuffix _distclean, $(modules))
+
+.PHONY: build
+build: $(addsuffix _build, $(modules))
 

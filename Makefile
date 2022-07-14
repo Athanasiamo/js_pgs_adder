@@ -1,25 +1,23 @@
 BASEDIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+DOCROOT:=$(BASEDIR)/public
+TMPDIR := $(shell mktemp -d)
+ZIPFILE := $(notdir $(BASEDIR)).zip
 
 include config_default.txt
 -include config.txt
 
-websrcs := \
-	www/css/bootstrap.min.css \
-	www/css/bootstrap.min.css.map \
-	www/js/bootstrap.bundle.min.js \
-	www/js/bootstrap.bundle.min.js.map \
-	www/js/fontawesome.min.js \
-	www/js/jquery.min.js \
-	www/js/fuse-6.4.6.js \
-	www/js/popper.min.js
-
 # ------------------------------------------------------------------------------
 
-# build
+# prepare for TSD
 
 PHONY: prepare_offline
 prepare_offline:
-	make -C 3rdparty download
+	git clone $(BASEDIR) $(TMPDIR)/$(notdir $(BASEDIR))
+	cd $(TMPDIR)/$(notdir $(BASEDIR)) && \
+		make download && \
+		cd .. && \
+		zip -rm $(ZIPFILE) $(TMPDIR)
+	@echo zip folder made: $(dir $(TMPDIR))$(ZIPFILE)
 
 # ------------------------------------------------------------------------------
 
@@ -28,31 +26,43 @@ prepare_offline:
 .PHONY: run_webui
 run_webui: 
 	PORT=${WEBSERVERPORT} \
-	DOCROOT=$(BASEDIR)/www \
+	DOCROOT=${DOCROOT} \
 	BASEDIR=$(BASEDIR) \
-	DATADIR=${DATADIR} \
+	DATADIR=$(BASEDIR)/$(DATAFOLDER) \
 	R_LIBS_USER=$(BASEDIR)/3rdparty/r_packages \
 	3rdparty/lighttpd/sbin/lighttpd -D -f lighttpd.conf
 
 # ------------------------------------------------------------------------------
 
 # clean
-
-.PHONY: distclean
-distclean: clean
+.PHONY: clean
+clean: 
 	$(MAKE) -C 3rdparty clean
 
-# ------------------------------------------------------------------------------
+.PHONY: dlclean
+dlclean: 
+	$(MAKE) -C 3rdparty dlclean
+
+
+.PHONY: distclean
+distclean: 
+	$(MAKE) -C 3rdparty distclean
 
 # ------------------------------------------------------------------------------
 
-# internal
+# build
 
-www/%: 3rdparty/%.gz
-	echo $*.gz $@
-	zcat < 3rdparty/$*.gz > $@ 
+.PHONY: build
+build: 
+	mkdir -p public/css/icons
+	mkdir -p public/js
+	$(MAKE) -C 3rdparty build
+	
+# ------------------------------------------------------------------------------
 
-.PHONY: 3rdparty
-3rdparty: $(websrcs)
-	$(MAKE) -C 3rdparty
+# download
 
+.PHONY: download
+download: 
+	$(MAKE) -C 3rdparty download
+	
