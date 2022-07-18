@@ -1,6 +1,6 @@
-BASEDIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
-DOCROOT:=$(BASEDIR)/public
-TMPDIR := $(shell mktemp -d)
+BASEDIR :=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+DOCROOT :=$(BASEDIR)/public
+TMPDIR  := $(shell mktemp -d)
 ZIPFILE := $(notdir $(BASEDIR)).zip
 
 include config_default.txt
@@ -16,8 +16,9 @@ prepare_offline:
 	cd $(TMPDIR)/$(notdir $(BASEDIR)) && \
 		make download && \
 		cd .. && \
-		zip -rm $(ZIPFILE) $(TMPDIR)
-	@echo zip folder made: $(dir $(TMPDIR))$(ZIPFILE)
+		zip -rm $(ZIPFILE) $(TMPDIR) && \
+		echo ${pwd}
+	@echo zip folder made: $(TMPDIR)/$(ZIPFILE)
 
 # ------------------------------------------------------------------------------
 

@@ -44,8 +44,8 @@
                     The data entered here should be computed for the entire LCBC catalogue 
                     of participants. 
                     This is <b>not</b> a place to store project-specifically computed PGS', 
-                    i.e. PGS' computed on only parts of the LCBC sample.
-                    These PGS' here are intended for simple use in papers.
+                    i.e. PGS' computed on only parts of the LCBC sample (i.e. for a specific paper).
+                    These PGS' here are intended for simple use and checks.
                     For more tailored PGS analyses, the involvement of a genetisist is necessary
                     in order to get the PGS wanted. 
                     Such outputs are <b>not</b> to be entered here. 
@@ -59,6 +59,7 @@
                         <li>Meta-data files must be populated on inclusion/update</li>
                     </ul>
                 </p>
+                <p>The data should be located in <pre><code>DATADIR</code></pre></p>
             </div>
         </div>
         <hr class="hr-main">
@@ -270,4 +271,17 @@ daish_2020_genetics/
         </div>
     </div>
 </body>
+<script>
+    (async function(){
+        const r = await fetch("./cgi/get_datadir.cgi");
+        // populate project selector with p
+        r.text().then(datadir => {
+                $('body :not(script)').contents().filter( function() {
+                return this.nodeType === 3;
+            }).replaceWith( function() {
+                return this.nodeValue.replace(/DATADIR/g, datadir);
+            });
+        })
+    })();
+</script>
 </html>
