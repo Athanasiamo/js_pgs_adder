@@ -1,23 +1,35 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="utf-8">
+    <link rel="icon" type="image/x-icon" href="icon.png">
     <link rel="stylesheet" href="./css/bootstrap.min.css">
-    <link rel="stylesheet" href="./css/lcbc.css">
+    <link rel="stylesheet" href="./custom.css">
     <script src="./js/jquery.min.js"></script>
     <script src="./js/bootstrap.bundle.min.js"></script>
-    <title>PGS data description</title>
-</head>
-<body>
-    <div class="container p-5 m-autox ">
-        <a href="./"><div class="hero mb-4"></div></a>
-        <center>
-            <h1 class="mb-2">LCBC computed PGS'</h1>
-            <h3 class="mb-2">Data description</h1>
-        </center>
+    <title>PGS adder</title>
+  </head>
+  <body>
+    <header>
+        <div class="navbar navbar-light bg-light shadow-sm">
+            <div id="navbar" class="container d-flex justify-content-between">
+              <ul class="nav pb-4">
+                <li class="nav-item" role="presentation">
+                  <a class="nav-link" aria-current="page" href="./index.html">PGS adder</a>
+                </li>
+                <li class="nav-item " role="presentation">
+                    <a class="nav-link active" aria-current="page" href="./data_descr.html">Data description</a>
+                </li>
+              </ul>
+              <a class="navbar-brand" href="#">
+                <img src="icon.png" alt="PGS adder" class="img-responsive" height="70">
+              </a>
+          </div>
+        </div>
+      </header>
 
+
+    <div class="container p-5 m-autox ">
         <div class="row ">
             <div class="col">
                 <p>
@@ -71,7 +83,7 @@
                 </p>
             </div>
             <div class="col-lg">
-                <pre>
+                <pre><code>
 jansen_2008_pnas/
     _metadata.json
     ad/
@@ -104,7 +116,7 @@ daish_2020_genetics/
         [...]
         bp.S11.profile
         bp.S12.profile
-                </pre>
+    </code></pre>
             </div>
         </div>
         <hr>
@@ -124,14 +136,14 @@ daish_2020_genetics/
                 </p>
             </div>
             <div class="col-lg">
-                <pre>
+                <pre><code>
     jansen_2008a_pnas/
         _metadata.json
     jansen_2008b_pnas/
         _metadata.json
     daish_2020_genetics/
         _metadata.json  
-                </pre>
+    </code></pre>
             </div>
         </div>
         <div class="row">
@@ -152,7 +164,7 @@ daish_2020_genetics/
                 </p>
             </div>
             <div class="col-lg">
-                <pre>
+                <pre><code>
     {
     "title": "Jansen et al 2008 - AD",
     "updated": "2019-01-01", 
@@ -160,7 +172,7 @@ daish_2020_genetics/
         some long title of a paper, vol X, 
         p123-142, DOI: doi.url"
     }
-                </pre>
+</code></pre>
             </div>
         </div>
         <hr>
@@ -189,14 +201,14 @@ daish_2020_genetics/
                 </p>
             </div>
             <div class="col-lg">
-                <pre>
+                <pre><code>
     jansen_2008_pnas/
         _metadata.json
         ad/
         ad_apoe/
         ad_sex/
         as_sexapoe/
-                </pre>
+    </code></pre>
             </div>
         </div>
         <div class="row">
@@ -215,12 +227,12 @@ daish_2020_genetics/
                 </p>
             </div>
             <div class="col-lg">
-                <pre>
+                <pre><code>
     {
     "title": "Body mass index",
     "covariates": ["list", "of", "covariates"]
     }
-                </pre>
+</code></pre>
             </div>
         </div>
         <div class="row">
@@ -236,7 +248,7 @@ daish_2020_genetics/
                 </p>
             </div>
             <div class="col-lg">
-                <pre>
+                <pre><code>
     jansen_2008_pnas/
         _metadata.json
         ad/
@@ -253,7 +265,7 @@ daish_2020_genetics/
             ad.S10.profile
             ad.S11.profile
             ad.S12.profile
-                </pre>
+        </code></pre>
             </div>
         </div>
     </div>

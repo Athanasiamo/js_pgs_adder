@@ -6,10 +6,8 @@ iconversion := 1.8.3
 
 # Arrays
 bsicons := \
-	question-circle-fill \
-	arrow-repeat \
-	x-circle-fill \
-	check-circle-fill
+	chevron-up \
+	chevron-down
 
 bssrcs := \
 	https://github.com/twbs/bootstrap/releases/download/v${bsversion}/bootstrap-${bsversion}-dist.zip \

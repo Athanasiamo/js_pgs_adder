@@ -2,204 +2,54 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <link rel="icon" type="image/x-icon" href="icon.png">
     <link rel="stylesheet" href="./css/bootstrap.min.css">
-    <link rel="stylesheet" href="./css/lcbc.css">
+    <link rel="stylesheet" href="./custom.css">
     <script src="./js/jquery.min.js"></script>
     <script src="./js/bootstrap.bundle.min.js"></script>
-    <title>LCBC PGS</title>
+    <title>PGS adder</title>
   </head>
   <body>
-    <div class="container p-5 m-autox text-center">
-      <div class="hero mb-4"></div>
-      <h1 class="mb-2">LCBC computed PGS'</h1>
-      <a href="data_descr.html"><small class="text-muted">
-        Description of data organisation necessary for adding to this list
-      </small></a>
-      <div class="container mb-4 p-2 border">
+    <header>
+      <div class="navbar navbar-light bg-light shadow-sm">
+          <div id="navbar" class="container d-flex justify-content-between">
+            <ul class="nav pb-4">
+              <li class="nav-item" role="presentation">
+                <a class="nav-link active" aria-current="page" href="./index.html">PGS adder</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                  <a class="nav-link" aria-current="page" href="./data_descr.html">Data description</a>
+              </li>
+            </ul>
+            <a class="navbar-brand" href="#">
+              <img src="icon.png" alt="PGS adder" class="img-responsive" height="70">
+            </a>
+        </div>
+      </div>
+    </header>
+
+    <div class="container p-5 m-autox">
+      <div class="container mb-4 p-2 border rounded text-center">
         <p class="font-weight-bold">Select thesholds</p>
-        <div id="s-selector" class="p-2 m-2"></div>
+        <div id="s-selector" class="rounded d-flex flex-wrap justify-content-around p-2 m-2"></div>
       </div>
       <p>
         Make sure to get necessary NOAS data to be able to append PGS data.
         Choose from the <code>geneticinfo</code> table, the <code>iid</code> column.
         As long as this column is on your data, you can merge the data by this shared column.
       </p>
-      <div id="pgsIds" class="d-flex justify-content-between flex-wrap"></div>
+      <p>
+        There are buttons to create import scripts in <code>bash</code> and <code>R</code>, and you can download each individual table
+        by clicking their name in the selections.
+      </p>
+      <div id="pgsIds" class="accordion"></div>
+      <div class="d-flex justify-content-around my-4">
+       <!-- <button id="request-pgs-tsv" class="btn btn-default" download="test.tsv" onclick="get_selected()">Get selected</button>-->
+        <button id="request-pgs-r" class="btn btn-default" onclick="create_r_script()">Get R script</button>
+        <button id="request-pgs-bash" class="btn btn-default" onclick="create_bash_script()">Get bash script</button>
+      </div>
     </div>
-
-    <script>
-      (function() {
-        const pgs_thresh = {
-          "S1": 5e-08,
-          "S2": 1e-07,
-          "S3": 1e-06,
-          "S4": 1e-05,
-          "S5": 1e-04,
-          "S6": 0.001,
-          "S7": 0.01,
-          "S8": 0.05,
-          "S9": 0.1,
-          "S10": 0.2,
-          "S11": 0.5,
-          "S12": 1
-        };
-        
-        for(var s in pgs_thresh){  
-          e_check_div = document.createElement("div");
-          e_check_div.classList.add("custom-control");
-          e_check_div.classList.add("custom-checkbox");
-          e_check_div.classList.add("custom-control-inline");
-          e_check_div.classList.add("checkbox");
-          e_check_div.classList.add("checkbox-info");
-          e_check_div.setAttribute("data-toggle", "tooltip");
-          e_check_div.setAttribute("title", `p-threshold: ${pgs_thresh[s]}`);
-            
-          e_check = document.createElement("input");
-          e_check.classList.add("custom-control-input");
-          e_check.classList.add("checkbox-styled");
-          e_check.type = "checkbox";
-          e_check_lab = document.createElement("label");
-          e_check_lab.classList.add("custom-control-label");
-          e_check.label = s;
-          e_check.id = s
-          e_check.name = "s-checkbox";
-          e_check.value = s;
-          e_check.addEventListener("change", update_urls, false)
-          e_check_lab.classList.add("pr-2");
-          e_check_lab.innerHTML = s;
-          e_check_lab.setAttribute("for", s);
-
-          default_checked = ["S7"];
-          if(default_checked.includes(s)){
-            e_check.checked = true;
-          }
-          document.getElementById("s-selector").appendChild(e_check_div);
-          e_check_div.appendChild(e_check);
-          e_check_div.appendChild(e_check_lab);
-        }
-      })();
-
-      function update_urls() {
-        const checkboxes = document.querySelectorAll(`input[name="s-checkbox"]:checked`);
-        let values = [];
-        checkboxes.forEach((checkbox) => {
-            values.push(checkbox.value);
-        });
-        if (values.length === 0) { 
-          alert("At least one threshold must be chosen.");
-          document.getElementById("S7").checked = true;
-          values = "S7";
-        }
-        const links = document.querySelectorAll(`a[name="links"]`);
-        links.forEach((link) => {
-          l_url = link.getAttribute("href");
-          var clean_url = l_url.substring(0, l_url.lastIndexOf('/') + 1 );
-          var new_url = `${clean_url}?${values.toString()}`;
-          link.setAttribute("href", new_url);
-        });
-      }
-      
-      (async function() {
-        const r = await fetch("./cgi/get_pgslist_json.cgi");
-        if (!r.ok) {
-          throw r.statusText();
-        }
-
-        const pgs_json = await r.json();
-
-        const e_p = document.getElementById("pgsIds");
-        for(id in pgs_json){
-          e_card = document.createElement("div");
-          e_card.classList.add("card");
-          e_card.classList.add("m-1");
-
-          e_card_head = document.createElement("div");
-          e_card_head.classList.add("card-header");
-          e_card_head.innerHTML = id;
-          e_card.appendChild(e_card_head);
-
-          e_card_body = document.createElement("div");
-          e_card_body.classList.add("card-body");
-          e_card.appendChild(e_card_body);
-
-          e_card_title = document.createElement("h5");
-          e_card_title.classList.add("card-title");
-          e_card_title.innerHTML = pgs_json[id]["title"];
-          e_card_body.appendChild(e_card_title);
-
-          e_card_text = document.createElement("p");
-          e_card_text.classList.add("card-text");
-          e_card_text.innerHTML = pgs_json[id]["reference"];
-          e_card_body.appendChild(e_card_text);
-
-          e_card_button = document.createElement("button");
-          e_card_button.innerHTML = "Expand pgs list";
-          e_card_button.classList.add("btn");
-          e_card_button.classList.add("btn-default");
-          e_card_button.setAttribute('data-target', `#${id}`);
-          e_card_button.setAttribute('data-toggle', 'collapse');
-          e_card_button.setAttribute('aria-expanded', 'false');
-
-          e_card_body.appendChild(e_card_button);
-
-          e_card_collapse = document.createElement("div");          
-          e_card_collapse.classList.add("collapse");
-          e_card_collapse.classList.add("mt-4");
-          e_card_collapse.id = `${id}`;
-          e_card.appendChild(e_card_collapse);
-
-          e_card_pgs_table = document.createElement("table");
-          e_card_pgs_table.classList.add("table");
-          e_card_pgs_table.classList.add("table-hover");
-          e_card_pgs_table.classList.add("table-dark");
-          e_card_pgs_table.classList.add("table-striped");
-          e_card_pgs_table.classList.add("table-sm");
-          e_card_pgs_table_body = document.createElement("tbody");
-          e_card_pgs_table_head = document.createElement("thead");
-          e_card_pgs_table_head_tr = document.createElement("tr");
-          e_card_pgs_table_head.appendChild(e_card_pgs_table_head_tr);
-          e_card_pgs_table.appendChild(e_card_pgs_table_head);
-          e_card_pgs_table.appendChild(e_card_pgs_table_body);
-          e_card_collapse.appendChild(e_card_pgs_table);
-
-          e_card_footer = document.createElement("div");
-          e_card_footer.classList.add("card-footer");
-          e_card_footer.classList.add("text-muted");
-          e_card_footer.innerHTML = `Last updated: ${pgs_json[id]["updated"]}`;
-          e_card.appendChild(e_card_footer);
-
-          e_p.appendChild(e_card);
-
-          // add table with pgs within each card
-          const tabl_heads = ["short", "covariates"];
-          for(heads in tabl_heads){
-            e_card_pgs_table_head_th = document.createElement("th");
-            e_card_pgs_table_head_th.setAttribute("scope", "col");
-            e_card_pgs_table_head_th.classList.add("th-sm");
-            e_card_pgs_table_head_th.innerHTML = tabl_heads[heads];
-            e_card_pgs_table_head_tr.appendChild(e_card_pgs_table_head_th);
-          }
-          for(pgs in pgs_json[id]["pgs"]){
-            e_card_pgs_row   = document.createElement("tr");
-            e_card_pgs_short = document.createElement("td");
-            e_card_pgs_short.setAttribute("data-toggle", "tooltip");
-            e_card_pgs_short.setAttribute("title", pgs_json[id]["pgs"][pgs]["title"]);
-            
-            e_card_pgs_row.appendChild(e_card_pgs_short);
-            e_card_pgs_covariates = document.createElement("td");
-            e_card_pgs_covariates.innerHTML = pgs_json[id]["pgs"][pgs]["covariates"].join(", ");
-            e_card_pgs_row.appendChild(e_card_pgs_covariates);
-            e_card_pgs_table_body.appendChild(e_card_pgs_row);
-
-            e_card_pgs_a =  document.createElement("a");
-            e_card_pgs_a.name = "links";
-            e_card_pgs_a.href = `./cgi/get_pgsfile_tsv.cgi?=${encodeURI(id)}?${encodeURI(pgs)}/`;
-            e_card_pgs_a.download = `noas_${id}_${pgs}_${pgs_json[id]["updated"]}.tsv`;
-            e_card_pgs_a.innerHTML = pgs;
-            e_card_pgs_short.appendChild(e_card_pgs_a);
-          }
-        };
-      })();
-    </script>
+    <div id="modal" class="modal" tabindex="-1" role="dialog"></div>
+    <script src="application.js"></script>
   </body>
 </html>
